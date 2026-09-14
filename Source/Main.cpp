@@ -6,39 +6,120 @@
 #include <map>
 #include <mutex>
 #include <vector>
+#include <algorithm>
 
 const unsigned int SAMPLE_RATE = 44100;
 const double PI = 3.14159265358979323846;
 
-// Simple Sine Oscillator
-class Oscillator {
+// Simple ADSR Envelope
+class ADSR {
 public:
-    Oscillator() : phase(0.0), increment(0.0), active(false) {}
+    enum State { IDLE, ATTACK, DECAY, SUSTAIN, RELEASE };
+
+    ADSR() : state(IDLE), level(0.0), attackRate(0.0), decayRate(0.0), sustainLevel(0.0), releaseRate(0.0) {}
+
+    void setParameters(double attackTime, double decayTime, double sustainLvl, double releaseTime) {
+        attackRate = 1.0 / (attackTime * SAMPLE_RATE);
+        decayRate = 1.0 / (decayTime * SAMPLE_RATE);
+        sustainLevel = sustainLvl;
+        releaseRate = 1.0 / (releaseTime * SAMPLE_RATE);
+    }
+
+    void noteOn() {
+        state = ATTACK;
+    }
+
+    void noteOff() {
+        if (state != IDLE) state = RELEASE;
+    }
+
+    double process() {
+        switch (state) {
+            case IDLE:
+                break;
+            case ATTACK:
+                level += attackRate;
+                if (level >= 1.0) {
+                    level = 1.0;
+                    state = DECAY;
+                }
+                break;
+            case DECAY:
+                level -= decayRate;
+                if (level <= sustainLevel) {
+                    level = sustainLevel;
+                    state = SUSTAIN;
+                }
+                break;
+            case SUSTAIN:
+                break;
+            case RELEASE:
+                level -= releaseRate;
+                if (level <= 0.0) {
+                    level = 0.0;
+                    state = IDLE;
+                }
+                break;
+        }
+        return level;
+    }
+
+    bool isActive() const { return state != IDLE; }
+
+private:
+    State state;
+    double level;
+    double attackRate, decayRate, sustainLevel, releaseRate;
+};
+
+// Advanced Synthesizer Voice (Electric Piano style)
+class Voice {
+public:
+    Voice() : phase1(0.0), phase2(0.0), phase3(0.0), increment(0.0) {
+        // Fast attack, short decay, medium sustain, medium release for piano feel
+        envelope.setParameters(0.01, 0.3, 0.4, 0.5);
+    }
 
     void setFrequency(double freq) {
         increment = (2.0 * PI * freq) / SAMPLE_RATE;
     }
 
-    void noteOn() { active = true; }
-    void noteOff() { active = false; }
-    bool isActive() const { return active; }
+    void noteOn() { envelope.noteOn(); }
+    void noteOff() { envelope.noteOff(); }
+    bool isActive() const { return envelope.isActive(); }
 
     double process() {
-        if (!active) return 0.0;
-        double val = std::sin(phase);
-        phase += increment;
-        if (phase >= 2.0 * PI) phase -= 2.0 * PI;
-        return val * 0.2; // 20% volume per note
+        if (!envelope.isActive()) return 0.0;
+
+        // Harmonics for Electric Piano feel
+        // Fundamental
+        double wave1 = std::sin(phase1);
+        // 1st Overtone (Octave)
+        double wave2 = std::sin(phase2) * 0.5;
+        // 2nd Overtone (Octave + Fifth)
+        double wave3 = std::sin(phase3) * 0.25;
+
+        phase1 += increment;
+        phase2 += increment * 2.0;
+        phase3 += increment * 3.0;
+
+        if (phase1 >= 2.0 * PI) phase1 -= 2.0 * PI;
+        if (phase2 >= 2.0 * PI) phase2 -= 2.0 * PI;
+        if (phase3 >= 2.0 * PI) phase3 -= 2.0 * PI;
+
+        double signal = (wave1 + wave2 + wave3) * 0.3; // Overall volume scaling
+        
+        return signal * envelope.process();
     }
 
 private:
-    double phase;
+    double phase1, phase2, phase3;
     double increment;
-    std::atomic<bool> active;
+    ADSR envelope;
 };
 
 std::mutex voiceMutex;
-std::vector<Oscillator> voices(88);
+std::vector<Voice> voices(88);
 
 // The RtAudio callback function
 int audioCallback(void* outputBuffer, void* /*inputBuffer*/, unsigned int nBufferFrames,
@@ -58,6 +139,9 @@ int audioCallback(void* outputBuffer, void* /*inputBuffer*/, unsigned int nBuffe
             }
         }
         
+        // Soft clipping to prevent harsh distortion when playing chords
+        sample = std::tanh(sample * 1.5);
+
         // Write to both left and right channels (assuming 2 channels)
         *buffer++ = (float)sample;
         *buffer++ = (float)sample;
@@ -72,7 +156,7 @@ double noteToFreq(int midiNote) {
 
 int main()
 {
-    std::cout << "Starting Lightweight C++ Virtual Piano Engine..." << std::endl;
+    std::cout << "Starting Synthesized C++ Virtual Piano Engine..." << std::endl;
 
     RtAudio dac;
     if (dac.getDeviceCount() < 1) {
@@ -106,8 +190,7 @@ int main()
     std::cout << "Play keys: A S D F G H J K (White keys) W E T Y U (Black keys)" << std::endl;
     std::cout << "Press ESC to quit." << std::endl;
 
-    // Key mapping (same as original python script)
-    // Virtual key codes for A-Z are just 'A', 'B' etc.
+    // Key mapping
     std::map<int, int> keyMap = {
         {'A', 60}, {'W', 61}, {'S', 62}, {'E', 63}, {'D', 64},
         {'F', 65}, {'T', 66}, {'G', 67}, {'Y', 68}, {'H', 69},
@@ -147,7 +230,7 @@ int main()
             }
         }
         
-        Sleep(10); // Sleep for 10ms to reduce CPU usage of this infinite loop
+        Sleep(5); // Sleep for 5ms to reduce CPU usage
     }
 
     if (dac.isStreamRunning()) {
