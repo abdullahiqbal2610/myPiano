@@ -92,13 +92,13 @@ int main()
     
     unsigned int bufferFrames = 256;
 
-    try {
-        dac.openStream(&parameters, NULL, RTAUDIO_FLOAT32,
-                       SAMPLE_RATE, &bufferFrames, &audioCallback);
-        dac.startStream();
+    if (dac.openStream(&parameters, NULL, RTAUDIO_FLOAT32,
+                       SAMPLE_RATE, &bufferFrames, &audioCallback)) {
+        std::cerr << dac.getErrorText() << std::endl;
+        return 1;
     }
-    catch (RtAudioError& e) {
-        e.printMessage();
+    if (dac.startStream()) {
+        std::cerr << dac.getErrorText() << std::endl;
         return 1;
     }
 
@@ -150,12 +150,11 @@ int main()
         Sleep(10); // Sleep for 10ms to reduce CPU usage of this infinite loop
     }
 
-    try {
+    if (dac.isStreamRunning()) {
         dac.stopStream();
-        dac.closeStream();
     }
-    catch (RtAudioError& e) {
-        e.printMessage();
+    if (dac.isStreamOpen()) {
+        dac.closeStream();
     }
 
     std::cout << "Engine shut down cleanly." << std::endl;
