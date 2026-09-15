@@ -20,17 +20,23 @@
                         <option value="auto">Auto Play</option>
                     </select>
                 </div>
-                <div class="control-group auto-controls" style="display: none;">
-                    <label for="melody-select">Melody:</label>
+                
+                <div class="control-group">
+                    <label for="melody-select">Sheet Music:</label>
                     <select id="melody-select">
+                        <option value="none">-- Select Melody --</option>
                         <option value="ode_to_joy">Ode to Joy (Beethoven)</option>
-                        <option value="fur_elise">Für Elise</option>
-                        <option value="kal_ho_naa_ho">Kal Ho Naa Ho (Title Track)</option>
-                        <option value="tum_hi_ho">Tum Hi Ho (Aashiqui 2)</option>
                         <option value="twinkle">Twinkle Twinkle</option>
+                        <option value="happy_birthday">Happy Birthday</option>
+                        <option value="kal_ho_naa_ho">Kal Ho Naa Ho</option>
+                        <option value="star_wars">Star Wars Theme</option>
+                        <option value="harry_potter">Harry Potter Theme</option>
                     </select>
-                    <button id="play-btn">Play</button>
-                    <button id="stop-btn">Stop</button>
+                </div>
+
+                <div class="control-group auto-controls" style="display: none;">
+                    <button id="play-btn">Auto-Play ▶</button>
+                    <button id="stop-btn">Stop ⏹</button>
                 </div>
             </div>
         </header>

@@ -5,27 +5,44 @@ const synth = new Tone.Sampler({
         "D#4": "Ds4.mp3",
         "F#4": "Fs4.mp3",
         "A4": "A4.mp3",
-        "C5": "C5.mp3"
+        "C5": "C5.mp3",
+        "D#5": "Ds5.mp3",
+        "F#5": "Fs5.mp3",
+        "A5": "A5.mp3"
     },
     release: 1.5,
     baseUrl: "https://tonejs.github.io/audio/salamander/"
 }).toDestination();
 
-// 2. Reverted to Original Key Mapping (Muscle Memory Saved!)
+// 2. Keyboard mapping (Standard DAW Layout: 2 Octaves)
 const keyMapping = [
-    { note: "C4", type: "white", compKey: "a", label: "A" },
-    { note: "C#4", type: "black", compKey: "w", label: "W" },
-    { note: "D4", type: "white", compKey: "s", label: "S" },
-    { note: "D#4", type: "black", compKey: "e", label: "E" },
-    { note: "E4", type: "white", compKey: "d", label: "D" },
-    { note: "F4", type: "white", compKey: "f", label: "F" },
-    { note: "F#4", type: "black", compKey: "t", label: "T" },
-    { note: "G4", type: "white", compKey: "g", label: "G" },
-    { note: "G#4", type: "black", compKey: "y", label: "Y" },
-    { note: "A4", type: "white", compKey: "h", label: "H" },
-    { note: "A#4", type: "black", compKey: "u", label: "U" },
-    { note: "B4", type: "white", compKey: "j", label: "J" },
-    { note: "C5", type: "white", compKey: "k", label: "K" }
+    // Octave 4 (Lower)
+    { note: "C4", type: "white", compKey: "z", label: "Z" },
+    { note: "C#4", type: "black", compKey: "s", label: "S" },
+    { note: "D4", type: "white", compKey: "x", label: "X" },
+    { note: "D#4", type: "black", compKey: "d", label: "D" },
+    { note: "E4", type: "white", compKey: "c", label: "C" },
+    { note: "F4", type: "white", compKey: "v", label: "V" },
+    { note: "F#4", type: "black", compKey: "g", label: "G" },
+    { note: "G4", type: "white", compKey: "b", label: "B" },
+    { note: "G#4", type: "black", compKey: "h", label: "H" },
+    { note: "A4", type: "white", compKey: "n", label: "N" },
+    { note: "A#4", type: "black", compKey: "j", label: "J" },
+    { note: "B4", type: "white", compKey: "m", label: "M" },
+
+    // Octave 5 (Upper)
+    { note: "C5", type: "white", compKey: "q", label: "Q" },
+    { note: "C#5", type: "black", compKey: "2", label: "2" },
+    { note: "D5", type: "white", compKey: "w", label: "W" },
+    { note: "D#5", type: "black", compKey: "3", label: "3" },
+    { note: "E5", type: "white", compKey: "e", label: "E" },
+    { note: "F5", type: "white", compKey: "r", label: "R" },
+    { note: "F#5", type: "black", compKey: "5", label: "5" },
+    { note: "G5", type: "white", compKey: "t", label: "T" },
+    { note: "G#5", type: "black", compKey: "6", label: "6" },
+    { note: "A5", type: "white", compKey: "y", label: "Y" },
+    { note: "A#5", type: "black", compKey: "7", label: "7" },
+    { note: "B5", type: "white", compKey: "u", label: "U" }
 ];
 
 const pressedKeys = new Set();
@@ -47,7 +64,7 @@ const currentMelodyName = document.getElementById("current-melody-name");
 // Expanded Melodies
 const melodies = {
     ode_to_joy: {
-        name: "Ode to Joy (Beethoven)",
+        name: "Ode to Joy",
         notes: [
             { note: "E4", duration: 500 }, { note: "E4", duration: 500 }, { note: "F4", duration: 500 }, { note: "G4", duration: 500 },
             { note: "comma" },
@@ -81,14 +98,41 @@ const melodies = {
             { note: "F4", duration: 600 }, { note: "E4", duration: 600 }, { note: "D4", duration: 1200 }
         ]
     },
-    jingle_bells: {
-        name: "Jingle Bells",
+    kal_ho_naa_ho: {
+        name: "Kal Ho Naa Ho",
         notes: [
-            { note: "E4", duration: 300 }, { note: "E4", duration: 300 }, { note: "E4", duration: 600 },
+            { note: "E4", duration: 400 }, { note: "G4", duration: 400 }, { note: "B4", duration: 400 }, { note: "A4", duration: 1000 },
             { note: "comma" },
-            { note: "E4", duration: 300 }, { note: "E4", duration: 300 }, { note: "E4", duration: 600 },
+            { note: "G4", duration: 400 }, { note: "F#4", duration: 400 }, { note: "E4", duration: 1000 },
             { note: "comma" },
-            { note: "E4", duration: 300 }, { note: "G4", duration: 300 }, { note: "C4", duration: 400 }, { note: "D4", duration: 200 }, { note: "E4", duration: 800 }
+            { note: "E4", duration: 400 }, { note: "G4", duration: 400 }, { note: "B4", duration: 400 }, { note: "D5", duration: 800 },
+            { note: "C5", duration: 800 }
+        ]
+    },
+    star_wars: {
+        name: "Star Wars Theme",
+        notes: [
+            { note: "D4", duration: 300 }, { note: "D4", duration: 300 }, { note: "D4", duration: 300 },
+            { note: "G4", duration: 1200 }, { note: "D5", duration: 1200 },
+            { note: "comma" },
+            { note: "C5", duration: 300 }, { note: "B4", duration: 300 }, { note: "A4", duration: 300 },
+            { note: "G5", duration: 1200 }, { note: "D5", duration: 800 },
+            { note: "comma" },
+            { note: "C5", duration: 300 }, { note: "B4", duration: 300 }, { note: "A4", duration: 300 },
+            { note: "G5", duration: 1200 }, { note: "D5", duration: 800 }
+        ]
+    },
+    harry_potter: {
+        name: "Harry Potter (Hedwig's Theme)",
+        notes: [
+            { note: "B4", duration: 500 }, 
+            { note: "E5", duration: 800 }, { note: "G5", duration: 300 }, { note: "F#5", duration: 500 },
+            { note: "E5", duration: 1000 }, { note: "B5", duration: 500 },
+            { note: "comma" },
+            { note: "A5", duration: 1200 }, { note: "F#5", duration: 1000 },
+            { note: "comma" },
+            { note: "E5", duration: 800 }, { note: "G5", duration: 300 }, { note: "F#5", duration: 500 },
+            { note: "D#5", duration: 1000 }, { note: "F5", duration: 500 }, { note: "B4", duration: 1500 }
         ]
     }
 };
@@ -113,17 +157,21 @@ function initUI() {
         pianoContainer.appendChild(keyEl);
     });
 
-    // 2. Build Computer Keyboard (Original A-K mapping)
+    // 2. Build Computer Keyboard Visuals (2 Octaves)
     compKeyboardContainer.innerHTML = "";
     const rows = [
-        ['w', 'e', 't', 'y', 'u'],
-        ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k']
+        ['2', '3', '5', '6', '7'],
+        ['q', 'w', 'e', 'r', 't', 'y', 'u'],
+        ['s', 'd', 'g', 'h', 'j'],
+        ['z', 'x', 'c', 'v', 'b', 'n', 'm']
     ];
 
     rows.forEach((row, index) => {
         const rowEl = document.createElement("div");
         rowEl.className = "keyboard-row";
-        if (index === 0) rowEl.style.marginLeft = "30px"; // offset W-E row to align like piano
+        if (index === 0) rowEl.style.marginLeft = "-60px"; // offset numbers
+        if (index === 2) rowEl.style.marginLeft = "30px"; // offset S-D row
+        if (index === 3) rowEl.style.marginLeft = "60px"; // offset Z-X row
 
         row.forEach(key => {
             const keyData = keyMapping.find(k => k.compKey === key);
@@ -146,6 +194,11 @@ function initUI() {
 }
 
 function renderSheetMusic(melodyKey) {
+    if (melodyKey === "none") {
+        sheetMusicContainer.style.display = "none";
+        return;
+    }
+    
     sheetMusicContainer.style.display = "block";
     sheetMusicDisplay.innerHTML = "";
     
@@ -164,7 +217,7 @@ function renderSheetMusic(melodyKey) {
                 const noteBlock = document.createElement("div");
                 noteBlock.className = "sheet-note";
                 noteBlock.id = `sheet-note-${idx}`;
-                noteBlock.innerText = keyData.label; // E.g., 'A', 'S', etc.
+                noteBlock.innerText = keyData.label; 
                 sheetMusicDisplay.appendChild(noteBlock);
             }
         }
@@ -181,7 +234,6 @@ async function triggerNoteOn(compKey, sheetNoteId = null) {
     await Tone.start();
 
     pressedKeys.add(compKey);
-    // Ensure the sampler has loaded before triggering to avoid warnings
     if (synth.loaded) {
         synth.triggerAttack(keyData.note);
     }
@@ -238,23 +290,22 @@ window.addEventListener("keyup", (e) => {
 modeSelect.addEventListener("change", (e) => {
     if (e.target.value === "auto") {
         autoControls.style.display = "flex";
-        // Show sheet music for the currently selected melody
-        renderSheetMusic(melodySelect.value);
     } else {
         autoControls.style.display = "none";
-        sheetMusicContainer.style.display = "none";
         stopAutoPlay();
     }
 });
 
+// Melody selection is now independent of the mode
 melodySelect.addEventListener("change", (e) => {
-    if (modeSelect.value === "auto") {
-        renderSheetMusic(e.target.value);
-    }
+    renderSheetMusic(e.target.value);
+    stopAutoPlay();
 });
 
 // Autoplay logic
 playBtn.addEventListener("click", async () => {
+    if (melodySelect.value === "none") return;
+    
     await Tone.start();
     stopAutoPlay();
     isAutoPlaying = true;
