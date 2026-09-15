@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virtual Web Piano</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Load Tone.js from CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Virtual Web Piano 🎹</h1>
+            <div class="controls">
+                <div class="control-group">
+                    <label for="mode-select">Mode:</label>
+                    <select id="mode-select">
+                        <option value="manual">Manual Play</option>
+                        <option value="auto">Auto Play</option>
+                    </select>
+                </div>
+                <div class="control-group auto-controls" style="display: none;">
+                    <label for="melody-select">Melody:</label>
+                    <select id="melody-select">
+                        <option value="ode_to_joy">Ode to Joy (Beethoven)</option>
+                        <option value="fur_elise">Für Elise</option>
+                        <option value="kal_ho_naa_ho">Kal Ho Naa Ho (Title Track)</option>
+                        <option value="tum_hi_ho">Tum Hi Ho (Aashiqui 2)</option>
+                        <option value="twinkle">Twinkle Twinkle</option>
+                    </select>
+                    <button id="play-btn">Play</button>
+                    <button id="stop-btn">Stop</button>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <!-- The Piano Keyboard -->
+            <div id="piano-container">
+                <!-- Piano keys will be generated via JS -->
+            </div>
+
+            <!-- The Virtual Computer Keyboard -->
+            <div id="computer-keyboard-container">
+                <!-- Keyboard UI will be generated via JS -->
+            </div>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

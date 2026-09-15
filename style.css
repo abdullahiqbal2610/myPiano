@@ -1,0 +1,207 @@
+:root {
+    --bg-color: #1a1a24;
+    --text-color: #e0e0e0;
+    --piano-white: #fdfdfd;
+    --piano-black: #111;
+    --key-pressed: #61dafb;
+    --key-pressed-black: #2a738a;
+    --comp-key-bg: #333;
+    --comp-key-border: #222;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+}
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 0;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 40px;
+    width: 100%;
+}
+
+h1 {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    color: var(--key-pressed);
+}
+
+.controls {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    background: #252533;
+    padding: 15px 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+
+.control-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+select, button {
+    padding: 8px 15px;
+    font-size: 1rem;
+    border-radius: 5px;
+    border: 1px solid #444;
+    background: #333;
+    color: white;
+    cursor: pointer;
+}
+
+select:hover, button:hover {
+    background: #444;
+}
+
+button {
+    background: var(--key-pressed);
+    color: black;
+    font-weight: bold;
+    border: none;
+}
+
+button:hover {
+    background: #4fa8c2;
+}
+
+#stop-btn {
+    background: #ff5555;
+    color: white;
+}
+
+#stop-btn:hover {
+    background: #cc4444;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 60px;
+    width: 100%;
+}
+
+/* --- Piano Styles --- */
+#piano-container {
+    position: relative;
+    display: flex;
+    height: 250px;
+    background: #000;
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+    /* For overlap of black keys, parent must be position relative and keys inline */
+}
+
+.piano-key {
+    position: relative;
+    border-radius: 0 0 5px 5px;
+    cursor: pointer;
+    box-sizing: border-box;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 15px;
+    font-weight: bold;
+    user-select: none;
+}
+
+.piano-key.white {
+    background: var(--piano-white);
+    width: 60px;
+    height: 100%;
+    border: 1px solid #ccc;
+    color: #555;
+    z-index: 1;
+}
+
+.piano-key.white.active {
+    background: var(--key-pressed);
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
+}
+
+.piano-key.black {
+    background: var(--piano-black);
+    width: 36px;
+    height: 60%;
+    margin-left: -18px;
+    margin-right: -18px;
+    z-index: 2;
+    color: #ccc;
+    font-size: 0.8rem;
+    border: 1px solid #000;
+    box-shadow: inset 0 -3px 5px rgba(255,255,255,0.2);
+}
+
+.piano-key.black.active {
+    background: var(--key-pressed-black);
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+}
+
+/* --- Computer Keyboard Styles --- */
+#computer-keyboard-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: #1e1e28;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+}
+
+.keyboard-row {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+}
+
+.comp-key {
+    width: 50px;
+    height: 50px;
+    background: var(--comp-key-bg);
+    border: 2px solid var(--comp-key-border);
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+    box-shadow: 0 4px 0 #111;
+    transition: all 0.1s;
+    user-select: none;
+}
+
+.comp-key span {
+    font-size: 0.7rem;
+    color: #888;
+    margin-top: 2px;
+}
+
+.comp-key.active {
+    background: var(--key-pressed);
+    color: black;
+    transform: translateY(4px);
+    box-shadow: 0 0 0 #111;
+}
+.comp-key.active span {
+    color: #333;
+}
