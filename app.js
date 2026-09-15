@@ -1,45 +1,31 @@
-// Initialize Synth
-const synth = new Tone.PolySynth(Tone.Synth, {
-    oscillator: { type: "triangle" },
-    envelope: {
-        attack: 0.02,
-        decay: 0.1,
-        sustain: 0.3,
-        release: 1
-    }
+// 1. Initialize High-Quality Acoustic Piano Sampler
+const synth = new Tone.Sampler({
+    urls: {
+        "C4": "C4.mp3",
+        "D#4": "Ds4.mp3",
+        "F#4": "Fs4.mp3",
+        "A4": "A4.mp3",
+        "C5": "C5.mp3"
+    },
+    release: 1.5,
+    baseUrl: "https://tonejs.github.io/audio/salamander/"
 }).toDestination();
 
-// Keyboard mapping (2 Octaves)
-// Lower octave: Z-M (white), S, D, G, H, J (black)
-// Upper octave: Q-U (white), 2, 3, 5, 6, 7 (black)
+// 2. Reverted to Original Key Mapping (Muscle Memory Saved!)
 const keyMapping = [
-    // Octave 4 (Lower)
-    { note: "C4", type: "white", compKey: "z", label: "Z" },
-    { note: "C#4", type: "black", compKey: "s", label: "S" },
-    { note: "D4", type: "white", compKey: "x", label: "X" },
-    { note: "D#4", type: "black", compKey: "d", label: "D" },
-    { note: "E4", type: "white", compKey: "c", label: "C" },
-    { note: "F4", type: "white", compKey: "v", label: "V" },
-    { note: "F#4", type: "black", compKey: "g", label: "G" },
-    { note: "G4", type: "white", compKey: "b", label: "B" },
-    { note: "G#4", type: "black", compKey: "h", label: "H" },
-    { note: "A4", type: "white", compKey: "n", label: "N" },
-    { note: "A#4", type: "black", compKey: "j", label: "J" },
-    { note: "B4", type: "white", compKey: "m", label: "M" },
-
-    // Octave 5 (Upper)
-    { note: "C5", type: "white", compKey: "q", label: "Q" },
-    { note: "C#5", type: "black", compKey: "2", label: "2" },
-    { note: "D5", type: "white", compKey: "w", label: "W" },
-    { note: "D#5", type: "black", compKey: "3", label: "3" },
-    { note: "E5", type: "white", compKey: "e", label: "E" },
-    { note: "F5", type: "white", compKey: "r", label: "R" },
-    { note: "F#5", type: "black", compKey: "5", label: "5" },
-    { note: "G5", type: "white", compKey: "t", label: "T" },
-    { note: "G#5", type: "black", compKey: "6", label: "6" },
-    { note: "A5", type: "white", compKey: "y", label: "Y" },
-    { note: "A#5", type: "black", compKey: "7", label: "7" },
-    { note: "B5", type: "white", compKey: "u", label: "U" }
+    { note: "C4", type: "white", compKey: "a", label: "A" },
+    { note: "C#4", type: "black", compKey: "w", label: "W" },
+    { note: "D4", type: "white", compKey: "s", label: "S" },
+    { note: "D#4", type: "black", compKey: "e", label: "E" },
+    { note: "E4", type: "white", compKey: "d", label: "D" },
+    { note: "F4", type: "white", compKey: "f", label: "F" },
+    { note: "F#4", type: "black", compKey: "t", label: "T" },
+    { note: "G4", type: "white", compKey: "g", label: "G" },
+    { note: "G#4", type: "black", compKey: "y", label: "Y" },
+    { note: "A4", type: "white", compKey: "h", label: "H" },
+    { note: "A#4", type: "black", compKey: "u", label: "U" },
+    { note: "B4", type: "white", compKey: "j", label: "J" },
+    { note: "C5", type: "white", compKey: "k", label: "K" }
 ];
 
 const pressedKeys = new Set();
@@ -54,10 +40,63 @@ const autoControls = document.querySelector(".auto-controls");
 const playBtn = document.getElementById("play-btn");
 const stopBtn = document.getElementById("stop-btn");
 const melodySelect = document.getElementById("melody-select");
+const sheetMusicContainer = document.getElementById("sheet-music-container");
+const sheetMusicDisplay = document.getElementById("sheet-music-display");
+const currentMelodyName = document.getElementById("current-melody-name");
+
+// Expanded Melodies
+const melodies = {
+    ode_to_joy: {
+        name: "Ode to Joy (Beethoven)",
+        notes: [
+            { note: "E4", duration: 500 }, { note: "E4", duration: 500 }, { note: "F4", duration: 500 }, { note: "G4", duration: 500 },
+            { note: "comma" },
+            { note: "G4", duration: 500 }, { note: "F4", duration: 500 }, { note: "E4", duration: 500 }, { note: "D4", duration: 500 },
+            { note: "comma" },
+            { note: "C4", duration: 500 }, { note: "C4", duration: 500 }, { note: "D4", duration: 500 }, { note: "E4", duration: 500 },
+            { note: "comma" },
+            { note: "E4", duration: 750 }, { note: "D4", duration: 250 }, { note: "D4", duration: 1000 }
+        ]
+    },
+    twinkle: {
+        name: "Twinkle Twinkle Little Star",
+        notes: [
+            { note: "C4", duration: 500 }, { note: "C4", duration: 500 }, { note: "G4", duration: 500 }, { note: "G4", duration: 500 },
+            { note: "A4", duration: 500 }, { note: "A4", duration: 500 }, { note: "G4", duration: 1000 },
+            { note: "comma" },
+            { note: "F4", duration: 500 }, { note: "F4", duration: 500 }, { note: "E4", duration: 500 }, { note: "E4", duration: 500 },
+            { note: "D4", duration: 500 }, { note: "D4", duration: 500 }, { note: "C4", duration: 1000 }
+        ]
+    },
+    happy_birthday: {
+        name: "Happy Birthday",
+        notes: [
+            { note: "C4", duration: 400 }, { note: "C4", duration: 200 }, { note: "D4", duration: 600 }, { note: "C4", duration: 600 },
+            { note: "F4", duration: 600 }, { note: "E4", duration: 1200 },
+            { note: "comma" },
+            { note: "C4", duration: 400 }, { note: "C4", duration: 200 }, { note: "D4", duration: 600 }, { note: "C4", duration: 600 },
+            { note: "G4", duration: 600 }, { note: "F4", duration: 1200 },
+            { note: "comma" },
+            { note: "C4", duration: 400 }, { note: "C4", duration: 200 }, { note: "C5", duration: 600 }, { note: "A4", duration: 600 },
+            { note: "F4", duration: 600 }, { note: "E4", duration: 600 }, { note: "D4", duration: 1200 }
+        ]
+    },
+    jingle_bells: {
+        name: "Jingle Bells",
+        notes: [
+            { note: "E4", duration: 300 }, { note: "E4", duration: 300 }, { note: "E4", duration: 600 },
+            { note: "comma" },
+            { note: "E4", duration: 300 }, { note: "E4", duration: 300 }, { note: "E4", duration: 600 },
+            { note: "comma" },
+            { note: "E4", duration: 300 }, { note: "G4", duration: 300 }, { note: "C4", duration: 400 }, { note: "D4", duration: 200 }, { note: "E4", duration: 800 }
+        ]
+    }
+};
 
 // Build UI
 function initUI() {
     // 1. Build Piano
+    pianoContainer.innerHTML = "";
     keyMapping.forEach(key => {
         const keyEl = document.createElement("div");
         keyEl.className = `piano-key ${key.type}`;
@@ -65,10 +104,8 @@ function initUI() {
         keyEl.dataset.comp = key.compKey;
         keyEl.id = `piano-${key.compKey}`;
 
-        // Label
         keyEl.innerText = key.label;
 
-        // Mouse Events
         keyEl.addEventListener("mousedown", () => triggerNoteOn(key.compKey));
         keyEl.addEventListener("mouseup", () => triggerNoteOff(key.compKey));
         keyEl.addEventListener("mouseleave", () => triggerNoteOff(key.compKey));
@@ -76,20 +113,17 @@ function initUI() {
         pianoContainer.appendChild(keyEl);
     });
 
-    // 2. Build Computer Keyboard (Visual representation)
+    // 2. Build Computer Keyboard (Original A-K mapping)
+    compKeyboardContainer.innerHTML = "";
     const rows = [
-        ['2', '3', '5', '6', '7'],
-        ['q', 'w', 'e', 'r', 't', 'y', 'u'],
-        ['s', 'd', 'g', 'h', 'j'],
-        ['z', 'x', 'c', 'v', 'b', 'n', 'm']
+        ['w', 'e', 't', 'y', 'u'],
+        ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k']
     ];
 
     rows.forEach((row, index) => {
         const rowEl = document.createElement("div");
         rowEl.className = "keyboard-row";
-        if (index === 0) rowEl.style.marginLeft = "-60px"; // offset numbers
-        if (index === 2) rowEl.style.marginLeft = "30px"; // offset A-S-D row
-        if (index === 3) rowEl.style.marginLeft = "60px"; // offset Z-X-C row
+        if (index === 0) rowEl.style.marginLeft = "30px"; // offset W-E row to align like piano
 
         row.forEach(key => {
             const keyData = keyMapping.find(k => k.compKey === key);
@@ -111,40 +145,80 @@ function initUI() {
     });
 }
 
+function renderSheetMusic(melodyKey) {
+    sheetMusicContainer.style.display = "block";
+    sheetMusicDisplay.innerHTML = "";
+    
+    const melody = melodies[melodyKey];
+    currentMelodyName.innerText = melody.name;
+
+    melody.notes.forEach((item, idx) => {
+        if (item.note === "comma") {
+            const comma = document.createElement("div");
+            comma.className = "sheet-comma";
+            comma.innerText = ",";
+            sheetMusicDisplay.appendChild(comma);
+        } else {
+            const keyData = keyMapping.find(k => k.note === item.note);
+            if (keyData) {
+                const noteBlock = document.createElement("div");
+                noteBlock.className = "sheet-note";
+                noteBlock.id = `sheet-note-${idx}`;
+                noteBlock.innerText = keyData.label; // E.g., 'A', 'S', etc.
+                sheetMusicDisplay.appendChild(noteBlock);
+            }
+        }
+    });
+}
+
 // Audio & Visual Triggers
-async function triggerNoteOn(compKey) {
+async function triggerNoteOn(compKey, sheetNoteId = null) {
     if (pressedKeys.has(compKey)) return;
 
     const keyData = keyMapping.find(k => k.compKey === compKey);
     if (!keyData) return;
 
-    // Start Audio context on first interaction
     await Tone.start();
 
     pressedKeys.add(compKey);
-    synth.triggerAttack(keyData.note);
+    // Ensure the sampler has loaded before triggering to avoid warnings
+    if (synth.loaded) {
+        synth.triggerAttack(keyData.note);
+    }
 
     // Visuals
     const pKey = document.getElementById(`piano-${compKey}`);
     const cKey = document.getElementById(`comp-${compKey}`);
     if (pKey) pKey.classList.add("active");
     if (cKey) cKey.classList.add("active");
+
+    if (sheetNoteId) {
+        const sNote = document.getElementById(sheetNoteId);
+        if (sNote) sNote.classList.add("playing");
+    }
 }
 
-function triggerNoteOff(compKey) {
+function triggerNoteOff(compKey, sheetNoteId = null) {
     if (!pressedKeys.has(compKey)) return;
 
     const keyData = keyMapping.find(k => k.compKey === compKey);
     if (!keyData) return;
 
     pressedKeys.delete(compKey);
-    synth.triggerRelease(keyData.note);
+    if (synth.loaded) {
+        synth.triggerRelease(keyData.note);
+    }
 
     // Visuals
     const pKey = document.getElementById(`piano-${compKey}`);
     const cKey = document.getElementById(`comp-${compKey}`);
     if (pKey) pKey.classList.remove("active");
     if (cKey) cKey.classList.remove("active");
+
+    if (sheetNoteId) {
+        const sNote = document.getElementById(sheetNoteId);
+        if (sNote) sNote.classList.remove("playing");
+    }
 }
 
 // Global Keyboard Events
@@ -164,43 +238,20 @@ window.addEventListener("keyup", (e) => {
 modeSelect.addEventListener("change", (e) => {
     if (e.target.value === "auto") {
         autoControls.style.display = "flex";
+        // Show sheet music for the currently selected melody
+        renderSheetMusic(melodySelect.value);
     } else {
         autoControls.style.display = "none";
+        sheetMusicContainer.style.display = "none";
         stopAutoPlay();
     }
 });
 
-// Melodies
-const melodies = {
-    ode_to_joy: [
-        { note: "E5", duration: 500 }, { note: "E5", duration: 500 }, { note: "F5", duration: 500 }, { note: "G5", duration: 500 },
-        { note: "G5", duration: 500 }, { note: "F5", duration: 500 }, { note: "E5", duration: 500 }, { note: "D5", duration: 500 },
-        { note: "C5", duration: 500 }, { note: "C5", duration: 500 }, { note: "D5", duration: 500 }, { note: "E5", duration: 500 },
-        { note: "E5", duration: 750 }, { note: "D5", duration: 250 }, { note: "D5", duration: 1000 }
-    ],
-    fur_elise: [
-        { note: "E5", duration: 300 }, { note: "D#5", duration: 300 }, { note: "E5", duration: 300 }, { note: "D#5", duration: 300 },
-        { note: "E5", duration: 300 }, { note: "B4", duration: 300 }, { note: "D5", duration: 300 }, { note: "C5", duration: 300 },
-        { note: "A4", duration: 800 }
-    ],
-    kal_ho_naa_ho: [
-        { note: "E4", duration: 400 }, { note: "G4", duration: 400 }, { note: "B4", duration: 400 }, { note: "A4", duration: 1000 },
-        { note: "G4", duration: 400 }, { note: "F#4", duration: 400 }, { note: "E4", duration: 1000 },
-        { note: "E4", duration: 400 }, { note: "G4", duration: 400 }, { note: "B4", duration: 400 }, { note: "D5", duration: 800 },
-        { note: "C5", duration: 800 }
-    ],
-    tum_hi_ho: [
-        { note: "C5", duration: 300 }, { note: "D5", duration: 300 }, { note: "D#5", duration: 800 },
-        { note: "D5", duration: 300 }, { note: "C5", duration: 300 }, { note: "D5", duration: 800 },
-        { note: "G4", duration: 800 }, { note: "C5", duration: 400 }, { note: "D5", duration: 400 }, { note: "D#5", duration: 1000 }
-    ],
-    twinkle: [
-        { note: "C4", duration: 500 }, { note: "C4", duration: 500 }, { note: "G4", duration: 500 }, { note: "G4", duration: 500 },
-        { note: "A4", duration: 500 }, { note: "A4", duration: 500 }, { note: "G4", duration: 1000 },
-        { note: "F4", duration: 500 }, { note: "F4", duration: 500 }, { note: "E4", duration: 500 }, { note: "E4", duration: 500 },
-        { note: "D4", duration: 500 }, { note: "D4", duration: 500 }, { note: "C4", duration: 1000 }
-    ]
-};
+melodySelect.addEventListener("change", (e) => {
+    if (modeSelect.value === "auto") {
+        renderSheetMusic(e.target.value);
+    }
+});
 
 // Autoplay logic
 playBtn.addEventListener("click", async () => {
@@ -211,22 +262,29 @@ playBtn.addEventListener("click", async () => {
     const melody = melodies[melodySelect.value];
     let currentTime = 0;
 
-    melody.forEach((noteEvent) => {
-        const keyData = keyMapping.find(k => k.note === noteEvent.note);
+    melody.notes.forEach((item, idx) => {
+        if (item.note === "comma") {
+            currentTime += 200; // Small pause
+            return;
+        }
+
+        const keyData = keyMapping.find(k => k.note === item.note);
         if (!keyData) return;
+
+        const sheetNoteId = `sheet-note-${idx}`;
 
         // Schedule Note On
         const t1 = setTimeout(() => {
-            triggerNoteOn(keyData.compKey);
+            triggerNoteOn(keyData.compKey, sheetNoteId);
         }, currentTime);
 
-        // Schedule Note Off (slightly before the next note to articulate)
+        // Schedule Note Off
         const t2 = setTimeout(() => {
-            triggerNoteOff(keyData.compKey);
-        }, currentTime + noteEvent.duration - 50);
+            triggerNoteOff(keyData.compKey, sheetNoteId);
+        }, currentTime + item.duration - 50);
 
         autoPlayTimeouts.push(t1, t2);
-        currentTime += noteEvent.duration;
+        currentTime += item.duration;
     });
 
     // Reset when done
@@ -242,8 +300,9 @@ function stopAutoPlay() {
     autoPlayTimeouts.forEach(clearTimeout);
     autoPlayTimeouts = [];
 
-    // Release all notes
+    // Release all notes and clear highlighting
     pressedKeys.forEach(compKey => triggerNoteOff(compKey));
+    document.querySelectorAll(".sheet-note.playing").forEach(el => el.classList.remove("playing"));
 }
 
 // Init

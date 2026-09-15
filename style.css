@@ -205,3 +205,46 @@ main {
 .comp-key.active span {
     color: #333;
 }
+
+/* --- Sheet Music Styles --- */
+#sheet-music-container {
+    background: #1e1e28;
+    padding: 20px 40px;
+    border-radius: 10px;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+    text-align: center;
+    width: 80%;
+    max-width: 800px;
+}
+#sheet-music-container h2 {
+    color: var(--key-pressed);
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+}
+#sheet-music-display {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    font-family: monospace;
+}
+.sheet-note {
+    padding: 10px 15px;
+    background: #333;
+    border-radius: 8px;
+    border: 2px solid #444;
+    transition: all 0.2s;
+}
+.sheet-note.playing {
+    background: var(--key-pressed);
+    color: black;
+    transform: scale(1.1);
+    border-color: white;
+}
+.sheet-comma {
+    padding: 10px 5px;
+    color: #666;
+}
+

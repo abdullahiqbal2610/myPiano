@@ -7,10 +7,11 @@ This project evolved from a C++ terminal application into a modern Web Applicati
 ## 🌟 Features
 
 - **Interactive UI**: A beautiful, dark-themed virtual piano that lights up when you play.
-- **Two-Octave Keyboard Mapping**: Play directly using your computer keyboard.
-  - **Lower Octave**: `Z` to `M` (White Keys) | `S`, `D`, `G`, `H`, `J` (Black Keys)
-  - **Upper Octave**: `Q` to `U` (White Keys) | `2`, `3`, `5`, `6`, `7` (Black Keys)
-- **Polyphonic Audio Engine**: Powered by `Tone.js`, allowing you to play multiple complex chords simultaneously with zero latency.
+- **Original Keyboard Mapping**: Play directly using your laptop keyboard, exactly as you learned it!
+  - **White Keys**: `A`, `S`, `D`, `F`, `G`, `H`, `J`, `K`
+  - **Black Keys**: `W`, `E`, `T`, `Y`, `U`
+- **Photorealistic Audio Engine**: Powered by `Tone.Sampler` loaded with authentic Salamander Grand Piano studio recordings.
+- **On-Screen Sheet Music**: Melody scripts automatically display their keystrokes on the screen and highlight like a karaoke machine during AutoPlay.
 - **Automode (Autoplay)**: Sit back and watch the piano play itself! Select from famous melodies like:
   - *Ode to Joy (Beethoven)*
   - *Für Elise*
